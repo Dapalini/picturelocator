@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Photo from '@/models/Photo';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     console.log('Connecting to database...');
     await dbConnect();
