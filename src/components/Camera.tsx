@@ -11,8 +11,9 @@ interface CameraProps {
 const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isFlashing, setIsFlashing] = useState<boolean>(false);
 
   useEffect(() => {
     startCamera();
@@ -25,10 +26,11 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
   }, [facingMode]);
 
   const startCamera = async () => {
+    setErrorMessage(''); // Reset error message
     try {
       const constraints = {
         video: {
-          facingMode: facingMode,
+          facingMode: { ideal: facingMode },
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
@@ -42,6 +44,11 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
     } catch (error) {
       console.error('Error accessing camera:', error);
       setErrorMessage('No camera found');
+      // Stop any existing stream
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        setStream(null);
+      }
     }
   };
 
@@ -59,6 +66,12 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const imageData = canvas.toDataURL('image/png');
         onCapture(imageData);
+
+        // Trigger flash effect
+        setIsFlashing(true);
+        setTimeout(() => {
+          setIsFlashing(false);
+        }, 1000);
       }
     }
   };
@@ -71,16 +84,19 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
 
   return (
     <div className="camera-container">
-      {errorMessage ? (
-        <div className="error-message">{errorMessage}</div>
-      ) : (
-        <>
-          <video ref={videoRef} autoPlay playsInline className="camera-video" />
-          <div className="camera-controls">
-            <button className="switch-camera-button" onClick={switchCamera}>
-              🔄
-            </button>
-            <button className="capture-button" onClick={takePicture}></button>
+      <video ref={videoRef} autoPlay playsInline className="camera-video" />
+      <div className="camera-controls">
+        <button className="switch-camera-button" onClick={switchCamera}>
+          🔄
+        </button>
+        {errorMessage ? (
+          <div className="error-message">{errorMessage}</div>
+        ) : (
+          <>
+            <button
+              className={`capture-button ${isFlashing ? 'flashing' : ''}`}
+              onClick={takePicture}
+            ></button>
             <label htmlFor="upload-input" className="upload-button">
               ⬆️
               <input
@@ -92,9 +108,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
                 style={{ display: 'none' }}
               />
             </label>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
       <style jsx>{`
         .camera-container {
@@ -129,10 +145,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
           pointer-events: none;
         }
 
-        .switch-camera-button {
+        .switch-camera-button,
+        .upload-button {
           position: absolute;
-          top: 20px;
-          right: 20px;
           width: 40px;
           height: 40px;
           background-color: rgba(255, 255, 255, 0.7);
@@ -140,6 +155,25 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
           border-radius: 5px;
           font-size: 24px;
           pointer-events: auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .switch-camera-button {
+          top: 20px;
+          right: 20px;
+        }
+
+        .upload-button {
+          bottom: 40px;
+          right: 20px;
+          cursor: pointer;
+        }
+
+        /* Hide the file input */
+        .upload-button input[type='file'] {
+          display: none;
         }
 
         .capture-button {
@@ -150,31 +184,38 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
           width: 70px;
           height: 70px;
           background-color: red;
-          border: 5px solid black;
+          border: 5px solid red; /* Outer red border */
           border-radius: 50%;
+          position: relative;
           pointer-events: auto;
         }
 
-        .upload-button {
+        .capture-button::after {
+          content: '';
           position: absolute;
-          bottom: 40px;
-          right: 20px;
-          width: 60px;
-          height: 60px;
-          background-color: blue;
-          border: none;
-          border-radius: 5px;
-          font-size: 24px;
-          color: white;
-          text-align: center;
-          line-height: 60px;
-          cursor: pointer;
-          pointer-events: auto;
+          top: 5px; /* Equal to outer border thickness */
+          left: 5px;
+          width: calc(100% - 10px);
+          height: calc(100% - 10px);
+          background-color: red;
+          border: 2px solid black; /* Inner black border */
+          border-radius: 50%;
         }
 
-        /* Hide the file input */
-        .upload-button input[type='file'] {
-          display: none;
+        @keyframes flash {
+          0% {
+            background-color: red;
+          }
+          50% {
+            background-color: white;
+          }
+          100% {
+            background-color: red;
+          }
+        }
+
+        .capture-button.flashing {
+          animation: flash 1s;
         }
       `}</style>
     </div>
