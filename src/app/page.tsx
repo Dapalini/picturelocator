@@ -15,6 +15,21 @@ const HomePage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
 
   const handleCapture = (imageData: string) => {
+    capturePhoto(imageData);
+  };
+
+  const handleUpload = (imageFiles: FileList) => {
+    Array.from(imageFiles).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        capturePhoto(imageData);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const capturePhoto = (imageData: string) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -53,8 +68,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <h1>Take a Picture</h1>
-      <Camera onCapture={handleCapture} />
+      <Camera onCapture={handleCapture} onUpload={handleUpload} />
       {message && <p>{message}</p>}
     </div>
   );

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "leaflet": "^1.9.4",
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.0",
