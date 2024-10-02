@@ -2,17 +2,21 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { PhotoData } from '@/models/Photo';
 
 interface MapComponentProps {
   photos: PhotoData[];
 }
 
-// Fix default icon issue in Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+interface DefaultIconPrototype extends L.Icon.Default {
+    _getIconUrl?: () => string;
+  }
+
+delete (L.Icon.Default.prototype as DefaultIconPrototype)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -32,7 +36,13 @@ const MapComponent: React.FC<MapComponentProps> = ({ photos }) => {
       {photos.map((photo, idx) => (
         <Marker key={idx} position={[photo.latitude, photo.longitude]}>
           <Popup>
-            <img src={photo.image} alt="User Photo" width="200" />
+          <Image
+                src={photo.image}
+                alt="User Photo"
+                width={200}
+                height={200}
+                unoptimized // Add this prop to allow data URLs or external images
+            />
             <p>{new Date(photo.timestamp).toLocaleString()}</p>
           </Popup>
         </Marker>

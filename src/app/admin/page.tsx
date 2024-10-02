@@ -2,14 +2,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import MapComponent from '@/components/MapComponent';
+import dynamic from 'next/dynamic';
 import { PhotoData } from '@/models/Photo';
 import { useRouter } from 'next/navigation';
+
+const MapComponent = dynamic(() => import('../../components/MapComponent'), {
+    ssr: false, // This line disables SSR for MapComponent
+  });
 
 const AdminPage: React.FC = () => {
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [photos, setPhotos] = useState<PhotoData[]>([]);
   const router = useRouter();
+
 
   useEffect(() => {
     const password = prompt('Enter admin password:');
@@ -19,7 +24,7 @@ const AdminPage: React.FC = () => {
       alert('Incorrect password');
       router.push('/');
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (authorized) {
