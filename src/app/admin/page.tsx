@@ -15,6 +15,8 @@ const AdminPage: React.FC = () => {
   const [photos, setPhotos] = useState<PhotoData[]>([]);
   const router = useRouter();
 
+    console.log("Hello")
+
 
   useEffect(() => {
     const password = prompt('Enter admin password:');
@@ -30,7 +32,9 @@ const AdminPage: React.FC = () => {
     if (authorized) {
       fetch('/api/photos')
         .then((res) => res.json())
-        .then((data) => setPhotos(data.photos))
+        .then((data) => {
+            console.log('Fetched photos:', data.photos); // Add this line
+            setPhotos(data.photos)})
         .catch((error) => console.error('Error fetching photos:', error));
     }
   }, [authorized]);

@@ -1,7 +1,7 @@
 // components/MapComponent.tsx
 'use client';
 
-import React from 'react';
+import React,{useEffect} from 'react';
 import Image from 'next/image';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -26,6 +26,11 @@ L.Icon.Default.mergeOptions({
 
 const MapComponent: React.FC<MapComponentProps> = ({ photos }) => {
   const position: [number, number] = [0, 0];
+
+  useEffect(() => {
+    console.log('Photos in MapComponent:', photos);
+  }, [photos]);
+
 
   return (
     <MapContainer center={position} zoom={2} style={{ height: '600px', width: '100%' }}>
