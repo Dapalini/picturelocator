@@ -1,21 +1,36 @@
 // models/Photo.ts
 
-import { Schema, model, models } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 
 export interface PhotoData {
-  image: string;
+  imageUrl: string;
   latitude: number;
   longitude: number;
   timestamp: string;
 }
 
-const PhotoSchema = new Schema<PhotoData>({
-  image: { type: String, required: true },
-  latitude: { type: Number, required: true, min: -90, max: 90 },
-  longitude: { type: Number, required: true, min: -180, max: 180 },
-  timestamp: { type: String, required: true },
+interface PhotoDocument extends PhotoData, Document {}
+
+const PhotoSchema = new mongoose.Schema<PhotoDocument>({
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  latitude: {
+    type: Number,
+    required: true,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+  },
+  timestamp: {
+    type: String,
+    required: true,
+  },
 });
 
-const Photo = models.Photo || model<PhotoData>('Photo', PhotoSchema);
+const Photo: Model<PhotoDocument> =
+  mongoose.models.Photo || mongoose.model<PhotoDocument>('Photo', PhotoSchema);
 
 export default Photo;

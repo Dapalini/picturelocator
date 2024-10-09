@@ -11,7 +11,9 @@ interface CameraProps {
 const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>(
+    'environment'
+  );
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isFlashing, setIsFlashing] = useState<boolean>(false);
 
@@ -36,7 +38,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
         },
       };
 
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      const mediaStream = await navigator.mediaDevices.getUserMedia(
+        constraints
+      );
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -53,7 +57,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
   };
 
   const switchCamera = () => {
-    setFacingMode((prevMode) => (prevMode === 'user' ? 'environment' : 'user'));
+    setFacingMode((prevMode) =>
+      prevMode === 'user' ? 'environment' : 'user'
+    );
   };
 
   const takePicture = () => {
@@ -63,7 +69,13 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
       canvas.height = videoRef.current.videoHeight;
       const context = canvas.getContext('2d');
       if (context) {
-        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        context.drawImage(
+          videoRef.current,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
         const imageData = canvas.toDataURL('image/png');
         onCapture(imageData);
 
@@ -76,7 +88,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
     }
   };
 
-  const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files.length > 0) {
       onUpload(event.target.files);
     }
@@ -84,7 +98,12 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
 
   return (
     <div className="camera-container">
-      <video ref={videoRef} autoPlay playsInline className="camera-video" />
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        className="camera-video"
+      />
       <div className="camera-controls">
         <button className="switch-camera-button" onClick={switchCamera}>
           🔄
@@ -94,7 +113,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
         ) : (
           <>
             <button
-              className={`capture-button ${isFlashing ? 'flashing' : ''}`}
+              className={`capture-button ${
+                isFlashing ? 'flashing' : ''
+              }`}
               onClick={takePicture}
             ></button>
             <label htmlFor="upload-input" className="upload-button">
@@ -166,7 +187,7 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
         }
 
         .upload-button {
-          bottom: 40px;
+          bottom: 20px;
           right: 20px;
           cursor: pointer;
         }
@@ -178,13 +199,13 @@ const Camera: React.FC<CameraProps> = ({ onCapture, onUpload }) => {
 
         .capture-button {
           position: absolute;
-          bottom: 40px;
+          bottom: 20px;
           left: 50%;
           transform: translateX(-50%);
-          width: 70px;
-          height: 70px;
+          width: 80px;
+          height: 80px;
           background-color: red;
-          border: 5px solid red; /* Outer red border */
+          border: 3px solid red; /* Outer red border */
           border-radius: 50%;
           position: relative;
           pointer-events: auto;

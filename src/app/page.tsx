@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import Camera from '../components/Camera';
 
 interface PhotoData {
-  image: string;
+  imageUrl: string;
   latitude: number;
   longitude: number;
   timestamp: string;
@@ -15,7 +15,7 @@ const HomePage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
 
   const handleCapture = (imageData: string) => {
-    capturePhoto(imageData);
+    uploadPhoto(imageData);
   };
 
   const handleUpload = (imageFiles: FileList) => {
@@ -23,20 +23,20 @@ const HomePage: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imageData = event.target?.result as string;
-        capturePhoto(imageData);
+        uploadPhoto(imageData);
       };
       reader.readAsDataURL(file);
     });
   };
 
-  const capturePhoto = (imageData: string) => {
+  const uploadPhoto = (imageData: string) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
           const timestamp = new Date().toISOString();
 
-          const photoData: PhotoData = {
+          const photoData = {
             image: imageData,
             latitude,
             longitude,
