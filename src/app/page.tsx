@@ -4,12 +4,6 @@
 import React, { useState } from 'react';
 import Camera from '../components/Camera';
 
-interface PhotoData {
-  imageUrl: string;
-  latitude: number;
-  longitude: number;
-  timestamp: string;
-}
 
 const HomePage: React.FC = () => {
   const [message, setMessage] = useState<string>('');
